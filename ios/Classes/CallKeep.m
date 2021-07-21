@@ -235,33 +235,23 @@ static CXProvider* sharedProvider;
     */
 
     NSDictionary *dic = payload.dictionaryPayload;
+    
+    NSLog([dic description]);
 
-    if (dic[@"aps"] != nil) {
-        NSLog(@"Do not use the 'alert' format for push type %@.", payload.type);
-        if(completion != nil) {
-            completion();
-        }
-        return;
-    }
-
-    NSString *uuid = dic[@"uuid"];
-    NSString *callerId = dic[@"caller_id"];
-    NSString *callerName = dic[@"caller_name"];
-    BOOL hasVideo = [dic[@"has_video"] boolValue];
+ 
+    NSString *uuid = [self createUUID];;
+    NSString *callerId = dic[@"caller-sip-uri"];
+//    NSString *callerName = dic[@"caller-sip-uri"];
+    BOOL hasVideo = false;
     NSString *callerIdType = dic[@"caller_id_type"];
    
-
-    if( uuid == nil) {
-        uuid = [self createUUID];
-    }
-
     //NSDictionary *extra = payload.dictionaryPayload[@"extra"];
 
     [CallKeep reportNewIncomingCall:uuid
                              handle:callerId
                          handleType:callerIdType
                            hasVideo:hasVideo
-                localizedCallerName:callerName
+                localizedCallerName:callerId
                         fromPushKit:YES
                             payload:dic
               withCompletionHandler:completion];
